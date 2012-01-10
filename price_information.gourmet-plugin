@@ -1,0 +1,8 @@
+[Gourmet Plugin]
+Module = price_information
+Version = 0.1
+API_Version = 1.0
+_Name = Pricing Information
+_Comment = Calculate the price for recipes.
+_Category = Main
+Authors = Wout Clymans <woutclymans@gmail.com>
