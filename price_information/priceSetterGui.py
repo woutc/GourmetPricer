@@ -19,53 +19,47 @@ class PriceSetterGui:
         self.ui = gtk.Builder()
         self.ui.add_from_file(os.path.join(current_path,'priceSetter.ui'))
         
-        signals = {"on_add_clicked": self.add_ingredient}
+        signals = {"on_add_clicked": self.add_ingredient,
+                   "on_remove_clicked": self.remove_ingredient}
         self.ui.connect_signals(signals)
         
         self.iter = {}
-        self.model = gtk.ListStore(gobject.TYPE_INT, gobject.TYPE_STRING, gobject.TYPE_STRING, gobject.TYPE_INT)
+        self.model = gtk.ListStore(gobject.TYPE_INT, gobject.TYPE_OBJECT, gobject.TYPE_STRING, gobject.TYPE_FLOAT)
         self.listview = self.ui.get_object("ingTree")
         self.listview.set_model(self.model)
-        self.listview.set_flags(gtk.TREE_MODEL_ITERS_PERSIST)  
+        self.listview.set_flags(gtk.TREE_MODEL_ITERS_PERSIST)
         
-        ### Quantity
-        self.columnQuantity_renderer = gtk.CellRendererText()
-        self.columnQuantity_renderer.set_property("editable", True)
-        self.columnQuantity = gtk.TreeViewColumn(_("Quantity"), self.columnQuantity_renderer, text=2, weight=5)
-        self.columnQuantity.set_expand(True)
-        self.columnQuantity.set_resizable(True)
-        self.listview.append_column(self.columnQuantity)            
+        if unitModel: 
+            self.unitModel = unitModel
+        else: 
+            self.unitModel = gourmet.GourmetRecipeManager.UnitModel(self.conv)        
         
-        ### Units
-        self.columnUnitAmt_renderer = gtk.CellRendererText()
-        self.columnUnitAmt_renderer.set_property("editable", True)
-        self.columnUnitAmt = gtk.TreeViewColumn(_("Unit"), self.columnUnitAmt_renderer, text=2, weight=5)
-        self.columnUnitAmt.set_expand(True)
-        self.columnUnitAmt.set_resizable(True)
-        self.listview.append_column(self.columnUnitAmt)           
+        columns = [_("Amt"), _("Unit"), _("Ingredient"), _("Price")]          
         
-        ### Name
-        self.columnName_renderer = gtk.CellRendererText()
-        self.columnName_renderer.set_property("editable", True)
-        self.columnName = gtk.TreeViewColumn(_("Ingredient"), self.columnName_renderer, text=2, weight=5)
-        self.columnName.set_expand(True)
-        self.columnName.set_resizable(True)
-        self.listview.append_column(self.columnName)           
+        for column_ in columns:
+            if column_ == _("Unit"):
+                column_renderer = gtk.CellRendererCombo()
+                column_renderer.set_property('model',self.unitModel)
+                column_renderer.set_property('text-column',0)
+               
+            else:
+                column_renderer = gtk.CellRendererText()
+            
+            column_renderer.set_property("editable", True)    
+            column = gtk.TreeViewColumn(column_, column_renderer, text=2, weight=5)
+            column.set_expand(True)
+            column.set_resizable(True)
+            self.listview.append_column(column)              
         
-        ### Price
-        self.columnPrice_renderer = gtk.CellRendererText()
-        self.columnPrice_renderer.set_property("editable", True)
-        self.columnPrice = gtk.TreeViewColumn(_("Price"), self.columnPrice_renderer, text=2, weight=5)
-        self.columnPrice.set_expand(True)
-        self.columnPrice.set_resizable(True)
-        self.listview.append_column(self.columnPrice)   
+    def add_ingredient(self, widget, *args):   
+        self.model.append([None, None, None, None])        
         
-    def add_ingredient(self, widget, *args):             
-        self.iter[0] = self.model.insert_before(None, None)
-        self.model.set_value(self.iter[0], 0, 0)
-        self.model.set_value(self.iter[0], 1, "")
-        self.model.set_value(self.iter[0], 2, "")
-        self.model.set_value(self.iter[0], 3, 0)
+    def remove_ingredient(self, widget, *args):           
+        model, iter = self.listview.get_selection().get_selected()
+        
+        if iter != None and self.model.iter_is_valid(iter):
+            self.model.remove(iter)
+           
         
 if __name__ == '__main__':
     ps=PriceSetterGui()
