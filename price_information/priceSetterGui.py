@@ -6,6 +6,7 @@ import gourmet.GourmetRecipeManager
 from gettext import gettext as _
 import os
 import gobject
+import priceAdderGui
 
 try:
     current_path = os.path.split(os.path.join(os.getcwd(),__file__))[0]
@@ -52,7 +53,7 @@ class PriceSetterGui:
             self.listview.append_column(column)              
         
     def add_ingredient(self, widget, *args):   
-        self.model.append([None, None, None, None])        
+        w = priceAdderGui.PriceAdderGui(self.unitModel)       
         
     def remove_ingredient(self, widget, *args):           
         model, iter = self.listview.get_selection().get_selected()

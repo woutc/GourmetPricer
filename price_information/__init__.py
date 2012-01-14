@@ -3,6 +3,8 @@ import gtk
 import priceSetterGui
 from gettext import gettext as _
 
+import data_plugin
+
 class PriceSetterPlugin (ToolPlugin):
     menu_items = '''<placeholder name="StandaloneTool">
     <menuitem action="PriceSetter"/>
@@ -27,4 +29,5 @@ class PriceSetterPlugin (ToolPlugin):
                 umodel = None
         priceSetterGui.PriceSetterGui(unitModel=umodel)
         
-plugins = [PriceSetterPlugin]
+plugins = [data_plugin.PricingDataPlugin,
+           PriceSetterPlugin]
